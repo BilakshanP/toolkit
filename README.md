@@ -22,6 +22,7 @@
 - hex
 - jsonwebtoken
 - oauth2
+- polars
 - ratatui
 - inquire
 - dialoguer + { indicatif, console }
