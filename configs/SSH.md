@@ -32,7 +32,43 @@ ssh -vfNL Z:localhost:Y hostname  # Run on B, M:Y -> B:Z
 
 **Note**: You can replace `localhost` with: `127.0.0.1`, `0.0.0.0` or `hostname`.
 
-4. rsync
+4. SSH Server
+
+```sh
+# Install (Fedora/RHEL)
+sudo dnf install openssh-server
+
+# Install (Debian/Ubuntu)
+sudo apt install openssh-server
+
+# Enable and start
+sudo systemctl enable --now sshd
+sudo systemctl status sshd
+```
+
+`/etc/ssh/sshd_config` (hardened):
+
+```
+Port 22
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+MaxAuthTries 3
+AllowUsers sketch
+```
+
+```sh
+# Validate config before restarting
+sudo sshd -t
+
+# Restart after config change
+sudo systemctl restart sshd
+```
+
+**Note:** Always keep an active session open when changing sshd config remotely — if you lock yourself out, you can't get back in.
+
+5. rsync
 
 ```sh
 # Basic: local to remote
