@@ -96,3 +96,58 @@ ssh -O check hostname
 # Kill a master connection
 ssh -O exit hostname
 ```
+
+6. ProxyCommand / ProxyJump
+
+Connect to a host through an intermediary (bastion/jump host):
+
+```ssh-config
+# Via a bastion
+Host internal
+    HostName 10.0.0.5
+    User deploy
+    ProxyCommand ssh bastion -W %h:%p
+
+# Modern alternative (OpenSSH 7.3+)
+Host internal
+    HostName 10.0.0.5
+    User deploy
+    ProxyJump bastion
+
+# Chaining multiple jumps
+Host deep-internal
+    HostName 10.0.1.99
+    ProxyJump bastion1,bastion2
+```
+
+One-off from command line:
+
+```sh
+ssh -J bastion user@10.0.0.5
+ssh -o ProxyCommand="ssh bastion -W %h:%p" user@10.0.0.5
+```
+
+7. AWS SSM Session Manager (no open inbound ports needed)
+
+```sh
+# Start a shell session
+aws ssm start-session --target i-0123456789abcdef0
+
+# SSH over SSM (add to ~/.ssh/config)
+Host i-*
+    ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+    User ec2-user
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+```sh
+# Now just SSH normally
+ssh i-0123456789abcdef0
+
+# Port forwarding over SSM
+aws ssm start-session --target i-0123456789abcdef0 \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["5432"],"localPortNumber":["5432"]}'
+```
+
+**Note:** Requires the SSM agent running on the instance and appropriate IAM permissions. No security groups or SSH keys needed for basic `start-session`.
