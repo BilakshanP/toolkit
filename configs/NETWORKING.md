@@ -12,7 +12,7 @@
 # Show connections
 nmcli con show
 
-# Set static IP
+# Set static IP (wired)
 nmcli con mod "Wired connection 1" \
   ipv4.method manual \
   ipv4.addresses 192.168.1.100/24 \
@@ -21,6 +21,16 @@ nmcli con mod "Wired connection 1" \
 
 # Apply
 nmcli con up "Wired connection 1"
+
+# Set static IP (WiFi)
+nmcli con mod "YourWiFiSSID" \
+  ipv4.addresses 192.168.1.100/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns "8.8.8.8 8.8.4.4" \
+  ipv4.method manual
+
+# Reconnect to apply
+nmcli con down "YourWiFiSSID" && nmcli con up "YourWiFiSSID"
 
 # Back to DHCP
 nmcli con mod "Wired connection 1" ipv4.method auto
@@ -32,6 +42,16 @@ nmcli con up "Wired connection 1"
 ```sh
 ip addr add 192.168.1.100/24 dev eth0
 ip route add default via 192.168.1.1
+ip link show                               # list interfaces
+```
+
+#### netsh (Windows)
+
+```cmd
+netsh interface ip set address "Wi-Fi" static 192.168.1.100 255.255.255.0 192.168.1.1
+netsh interface ip set dns "Wi-Fi" static 8.8.8.8
+netsh interface ip show config             # show current config
+netstat -an                                # all connections and listening ports
 ```
 
 ### DNS
