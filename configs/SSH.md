@@ -67,3 +67,32 @@ sudo systemctl restart sshd
 ```
 
 **Note:** Always keep an active session open when changing sshd config remotely — if you lock yourself out, you can't get back in.
+
+5. Connection Multiplexing
+
+Reuses a single SSH connection for multiple sessions — avoids repeated handshakes.
+
+`~/.ssh/config`:
+
+```ssh-config
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
+```
+
+```sh
+mkdir -p ~/.ssh/sockets
+```
+
+- `ControlMaster auto`: first connection becomes the master, subsequent ones piggyback
+- `ControlPath`: socket file location (`%r` = user, `%h` = host, `%p` = port)
+- `ControlPersist 600`: keep master alive 10 min after last session closes
+
+```sh
+# Check status of a master connection
+ssh -O check hostname
+
+# Kill a master connection
+ssh -O exit hostname
+```
