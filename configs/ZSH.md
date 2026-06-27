@@ -34,15 +34,14 @@ Output: `18:35:25 27-06-2026 ~/project (main) a1b2c3d* (venv) [1]`
 ### Terminal title (iTerm2)
 
 ```zsh
+# iTerm2: Settings → Profiles → General → Title → set to "Session Name"
 _set_title_precmd() { print -Pn "\e]0;%~\a" }
-_set_title_preexec() { print -Pn "\e]0;%~ — ${1%% *}\a" }
 precmd_functions+=(_set_title_precmd)
-preexec_functions+=(_set_title_preexec)
 ```
 
-Shows `~/dir` at rest, `~/dir — cmd` while running. The `—` separator avoids ambiguity with spaces in directory names.
+Shows current directory in the tab/window title.
 
-**iTerm2 requirement:** Settings → Profiles → General → Title — include "Session Name" and ensure "Applications in terminal may change the title" is enabled.
+**iTerm2 requirement:** Settings → Profiles → General → Title — set to "Session Name".
 
 ### History
 
