@@ -4,7 +4,7 @@ Personal knowledge base — cheat sheets, configs, and reference notes.
 
 ```
 tools/      GPG, Diff, Netcat, Rsync, Tee, Tmux, Screen
-configs/    SSH, Docker, Networking, RDP, WSL, Rust, Bash
+configs/    SSH, Docker, Networking, RDP, WSL, Rust, Bash, Zsh
 notes/      PostgreSQL
 setups/     Python
 ```
