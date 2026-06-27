@@ -45,3 +45,9 @@
 - `uuid`: UUID generation and parsing
 - `wasm-bindgen`, `wasm-pack`: Rust <-> JS interop for WebAssembly
 - `wasmtime`: standalone WebAssembly runtime
+
+### Repositories
+
+#### Tools
+
+- `pkgit`: https://git.symlinx.net/pkgit/about/
