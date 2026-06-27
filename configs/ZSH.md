@@ -34,14 +34,12 @@ Output: `18:35:25 27-06-2026 ~/project (main) a1b2c3d* (venv) [1]`
 ### Terminal title (iTerm2)
 
 ```zsh
-# iTerm2: Settings → Profiles → General → Title → set to "Session Name"
+# iTerm2: Settings → Profiles → General → Title → "Session Name + Job (optionally with parameters)"
 _set_title_precmd() { print -Pn "\e]0;%~\a" }
 precmd_functions+=(_set_title_precmd)
 ```
 
-Shows current directory in the tab/window title.
-
-**iTerm2 requirement:** Settings → Profiles → General → Title — set to "Session Name".
+The shell sets the session name to the current directory. iTerm2 appends the running command automatically via the "Job" part of the title setting.
 
 ### History
 
