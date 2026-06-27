@@ -6,6 +6,7 @@
 
 - [Graphify](https://github.com/safishamsi/graphify)
 - [CopyParty](https://github.com/9001/copyparty)
+- [pkgit](https://git.symlinx.net/pkgit/about/)
 
 ### Libraries
 
@@ -49,5 +50,3 @@
 ### Repositories
 
 #### Tools
-
-- `pkgit`: https://git.symlinx.net/pkgit/about/
