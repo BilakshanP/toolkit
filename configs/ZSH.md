@@ -6,12 +6,27 @@
 setopt PROMPT_SUBST
 
 git_info() {
-  local branch=$(git branch --show-current 2>/dev/null)
-  [[ -z $branch ]] && return
   local hash=$(git rev-parse --short HEAD 2>/dev/null)
+  [[ -z $hash ]] && return
+  local branch=$(git branch --show-current 2>/dev/null)
   local dirty=""
-  [[ -n $(git status --porcelain 2>/dev/null) ]] && dirty="*"
-  echo " ($branch) ${hash}${dirty}"
+  [[ -n $(git status --porcelain --untracked-files=no 2>/dev/null) ]] && dirty="*"
+  local arrows=""
+  if [[ -n $branch ]]; then
+    local ahead behind
+    ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
+    behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+    [[ $ahead -gt 0 ]] && arrows+="↑${ahead}"
+    [[ $behind -gt 0 ]] && arrows+="↓${behind}"
+  fi
+  local stash=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+  local stash_info=""
+  [[ $stash -gt 0 ]] && stash_info=" {${stash}}"
+  if [[ -n $branch ]]; then
+    echo " ($branch) ${hash}${dirty}${arrows:+ $arrows}${stash_info}"
+  else
+    echo " (detached) ${hash}${dirty}${stash_info}"
+  fi
 }
 
 venv_info() {
@@ -22,14 +37,15 @@ PROMPT='%F{yellow}%* %D{%d-%m-%Y}%f %F{blue}%B%~%b%f%F{green}$(git_info)%f%F{mag
 %(?.%B%F{green}.%B%F{red})%# %f%b'
 ```
 
-Output: `18:35:25 27-06-2026 ~/project (main) a1b2c3d* (venv) [1]`
+Output: `18:04:34 29-06-2026 ~/project (main) a1b2c3d* ↑2↓1 {3} (venv) [1]`
 
 - Yellow — time + date
 - Blue bold — path
-- Green — branch + short hash, `*` if dirty
+- Green — branch + short hash, `*` if dirty tracked files, `↑↓` ahead/behind, `{n}` stash count
 - Magenta — virtualenv (only when active)
 - Red `[N]` — exit code (only on failure)
 - `%` green on success, red on failure
+- Detached HEAD shows `(detached) hash`
 
 ### Terminal title
 
@@ -43,6 +59,7 @@ SAVEHIST=10000
 HISTFILE=~/.zsh_history
 setopt SHARE_HISTORY       # share history across all open terminals in real-time
 setopt HIST_IGNORE_DUPS    # skip consecutive duplicate entries
+setopt HIST_IGNORE_SPACE   # commands starting with space are not saved
 ```
 
 ### Options
@@ -79,12 +96,18 @@ hash -d ws=~/Workspace
 # then: cd ~ws
 ```
 
+### Misc
+
+```sh
+zsh -f    # start zsh without reading any config (.zshrc, .zprofile, .zshenv)
+```
+
 ### Prompt escapes reference
 
 ```
 %n      username
 %m      hostname (short)
-%~      current dir (~ abbreviated)
+%~      current dir (~ abbreviated, respects hash -d)
 %*      time HH:MM:SS
 %D{fmt} date with strftime format
 %#      % for user, # for root
