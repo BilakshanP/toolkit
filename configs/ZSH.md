@@ -115,6 +115,30 @@ hash -d ws=~/Workspace
 zsh -f    # start zsh without reading any config (.zshrc, .zprofile, .zshenv)
 ```
 
+### Using prompt formatting in scripts
+
+The `%`-sequences in `PROMPT` are expanded by zsh's built-in prompt engine. Use `print -P` to access the same formatting in scripts:
+
+```zsh
+print -P '%F{red}Error:%f something went wrong'
+print -P '%F{green}✓%f Done in %B3.2s%b'
+print -P '%F{cyan}%~%f'   # current dir with ~ abbreviation
+```
+
+Helper pattern:
+
+```zsh
+info()  { print -P "%F{blue}[INFO]%f  $1" }
+warn()  { print -P "%F{yellow}[WARN]%f  $1" }
+err()   { print -P "%F{red}[ERROR]%f $1" }
+ok()    { print -P "%F{green}[OK]%f    $1" }
+```
+
+Notes:
+- `print -P` is zsh-only — for portable scripts use ANSI escapes (`\033[31m`)
+- `$(...)` in `PROMPT` works because of `setopt PROMPT_SUBST` — it re-evaluates on every render
+- Docs: `man zshmisc` → "EXPANSION OF PROMPT SEQUENCES", or https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
+
 ### Prompt escapes reference
 
 ```
