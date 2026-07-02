@@ -89,6 +89,19 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 - Autosuggestions — gray predictions as you type, press → to accept
 - Syntax highlighting — valid commands green, invalid red
 
+### .zshrc.d
+
+```zsh
+if [ -d ~/.zshrc.d ]; then
+    for rc in ~/.zshrc.d/*(N); do
+        [ -f "$rc" ] && source "$rc"
+    done
+    unset rc
+fi
+```
+
+Drop individual files into `~/.zshrc.d/` (e.g., `aliases.zsh`, `functions.zsh`) and they'll be sourced automatically.
+
 ### Bookmarks
 
 ```zsh
