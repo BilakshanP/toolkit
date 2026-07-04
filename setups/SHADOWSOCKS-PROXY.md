@@ -93,6 +93,11 @@ Settings → Network Settings → Manual proxy configuration:
 
 - Select **SOCKS v5**
 - Check ✓ **Proxy DNS when using SOCKS v5**
+- In **"No proxy for"**, add local services: `localhost, 127.0.0.1, *.local, 192.168.*`
+
+> **Gotcha:** With "Proxy DNS" enabled, Firefox resolves all DNS through the remote proxy. Local network services (e.g., a domain pointing to `192.168.x.x`) will fail because the EC2 server can't reach your LAN. Add those domains to the "No proxy for" exclusion list.
+
+> **Note:** Firefox also has its own DNS-over-HTTPS (DoH) setting (Privacy & Security → DNS over HTTPS). If a local domain fails even with the proxy exclusion, add it to the DoH exception list as well, or disable DoH entirely.
 
 ## Client Setup — Android
 
