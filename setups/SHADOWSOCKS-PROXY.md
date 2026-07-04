@@ -124,26 +124,9 @@ Add to your shell rc (e.g., `~/.zshrc.d/proxy.sh`):
 sox() {
     local plist="$HOME/Library/LaunchAgents/com.shadowsocks.local.plist"
     local label="com.shadowsocks.local"
-    local pac="$HOME/.config/proxy.pac"
-    local pac_on="$HOME/.config/proxy-on.pac"
-    local pac_off="$HOME/.config/proxy-off.pac"
 
     is_loaded() {
         launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1
-    }
-
-    proxy_on() {
-        launchctl load "$plist" &&
-            ln -sf "$pac_on" "$pac" &&
-            echo "[sox] Enabled." ||
-            echo "[sox] Failed to enable."
-    }
-
-    proxy_off() {
-        launchctl unload "$plist" &&
-            ln -sf "$pac_off" "$pac" &&
-            echo "[sox] Disabled." ||
-            echo "[sox] Failed to disable."
     }
 
     case "$1" in
@@ -151,21 +134,29 @@ sox() {
             if is_loaded; then
                 echo "[sox] Already enabled."
             else
-                proxy_on
+                launchctl load "$plist" &&
+                    echo "[sox] Enabled." ||
+                    echo "[sox] Failed to enable."
             fi
             ;;
         off)
             if is_loaded; then
-                proxy_off
+                launchctl unload "$plist" &&
+                    echo "[sox] Disabled." ||
+                    echo "[sox] Failed to disable."
             else
                 echo "[sox] Already disabled."
             fi
             ;;
         "")
             if is_loaded; then
-                proxy_off
+                launchctl unload "$plist" &&
+                    echo "[sox] Disabled." ||
+                    echo "[sox] Failed to disable."
             else
-                proxy_on
+                launchctl load "$plist" &&
+                    echo "[sox] Enabled." ||
+                    echo "[sox] Failed to enable."
             fi
             ;;
         *)
@@ -184,40 +175,25 @@ sox on     # explicit enable
 sox off    # explicit disable
 ```
 
-### Firefox Configuration (PAC file)
+### Firefox Configuration (PAC file + DoH)
 
-Instead of manual proxy settings, use a PAC file so `sox` controls Firefox automatically.
+#### PAC file (`~/.config/proxy.pac`)
 
-Create `~/.config/proxy-on.pac`:
+Single static file — never changes. Uses SOCKS5 with DIRECT fallback so Firefox automatically bypasses the proxy when ss-local is off:
 
 ```js
 function FindProxyForURL(url, host) {
     if (
-        host === "localhost" ||
+        isPlainHostName(host) ||
         host === "127.0.0.1" ||
-        isInNet(host, "192.168.0.0", "255.255.0.0") ||
-        isInNet(host, "10.0.0.0", "255.0.0.0") ||
-        shExpMatch(host, "*.local") ||
-        shExpMatch(host, "stream.trym.in")
+        host === "::1" ||
+        shExpMatch(host, "*.local")
     ) {
         return "DIRECT";
     }
-    return "SOCKS5 127.0.0.1:1080";
+
+    return "SOCKS5 127.0.0.1:1080; DIRECT";
 }
-```
-
-Create `~/.config/proxy-off.pac`:
-
-```js
-function FindProxyForURL(url, host) {
-    return "DIRECT";
-}
-```
-
-Create a symlink:
-
-```sh
-ln -s ~/.config/proxy-off.pac ~/.config/proxy.pac
 ```
 
 In Firefox: Settings → Network Settings → **Automatic proxy configuration URL**:
@@ -226,9 +202,33 @@ In Firefox: Settings → Network Settings → **Automatic proxy configuration UR
 file:///Users/<username>/.config/proxy.pac
 ```
 
-`sox` swaps the symlink between `proxy-on.pac` and `proxy-off.pac`. Firefox reads the PAC file on each request, so it picks up changes automatically. DoH can stay enabled.
+#### Firefox proxy exceptions ("No proxy for")
 
-> **Gotcha:** Local network services (e.g., `stream.trym.in` pointing to `192.168.x.x`) must be excluded in the PAC file — the remote proxy can't reach your LAN.
+Add your DoH provider so it never routes through SOCKS:
+
+```
+cloudflare-dns.com
+```
+
+#### DNS over HTTPS (about:config)
+
+```
+network.trr.mode = 3
+network.trr.uri = https://cloudflare-dns.com/dns-query
+network.trr.bootstrapAddr = 1.1.1.1
+```
+
+Disable the UI DoH setting (Privacy & Security → DNS over HTTPS → Off) — use the `about:config` settings above instead.
+
+#### DoH exceptions
+
+Add local domains that should resolve via system DNS (not DoH):
+
+```
+stream.trym.in
+```
+
+> **Gotcha (Firefox bug):** Firefox routes TRR/DoH connections through the SOCKS proxy and doesn't recover when the proxy dies, even if the PAC file specifies `; DIRECT` fallback. The fix is adding the DoH provider hostname to Firefox's "No proxy for" exceptions so TRR always connects DIRECT. See [Bug 1230803](https://bugzilla.mozilla.org/show_bug.cgi?id=1230803).
 
 ## Client Setup — Android
 
