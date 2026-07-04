@@ -116,6 +116,65 @@ launchctl unload ~/Library/LaunchAgents/com.shadowsocks.local.plist
 
 Auto-starts on login, restarts if it crashes.
 
+### Shell toggle (`sox`)
+
+Add to your shell rc (e.g., `~/.zshrc.d/proxy.sh`):
+
+```sh
+sox() {
+    local plist="$HOME/Library/LaunchAgents/com.shadowsocks.local.plist"
+    local label="com.shadowsocks.local"
+
+    is_loaded() {
+        launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1
+    }
+
+    case "$1" in
+        on)
+            if is_loaded; then
+                echo "[sox] Already enabled."
+            else
+                launchctl load "$plist" &&
+                    echo "[sox] Enabled." ||
+                    echo "[sox] Failed to enable."
+            fi
+            ;;
+        off)
+            if is_loaded; then
+                launchctl unload "$plist" &&
+                    echo "[sox] Disabled." ||
+                    echo "[sox] Failed to disable."
+            else
+                echo "[sox] Already disabled."
+            fi
+            ;;
+        "" )
+            if is_loaded; then
+                launchctl unload "$plist" &&
+                    echo "[sox] Disabled." ||
+                    echo "[sox] Failed to disable."
+            else
+                launchctl load "$plist" &&
+                    echo "[sox] Enabled." ||
+                    echo "[sox] Failed to enable."
+            fi
+            ;;
+        *)
+            echo "Usage: sox [on|off]"
+            return 1
+            ;;
+    esac
+}
+```
+
+Usage:
+
+```sh
+sox        # toggle on/off
+sox on     # explicit enable
+sox off    # explicit disable
+```
+
 ### Firefox Configuration
 
 Settings → Network Settings → Manual proxy configuration:
