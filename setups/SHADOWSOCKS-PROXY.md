@@ -59,7 +59,7 @@ sudo systemctl status shadowsocks-libev
 brew install shadowsocks-libev
 ```
 
-### Local config (`~/ss-local.json`)
+### Local config (`~/.config/ss-local.json`)
 
 ```json
 {
@@ -76,8 +76,45 @@ brew install shadowsocks-libev
 ### Run
 
 ```sh
-ss-local -c ~/ss-local.json
+ss-local -c ~/.config/ss-local.json
 ```
+
+### Run as background service (LaunchAgent)
+
+Create `~/Library/LaunchAgents/com.shadowsocks.local.plist`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.shadowsocks.local</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/ss-local</string>
+        <string>-c</string>
+        <string>/Users/bipurohi2601/.config/ss-local.json</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+```
+
+Load/unload:
+
+```sh
+# Start (and enable on login)
+launchctl load ~/Library/LaunchAgents/com.shadowsocks.local.plist
+
+# Stop
+launchctl unload ~/Library/LaunchAgents/com.shadowsocks.local.plist
+```
+
+Auto-starts on login, restarts if it crashes.
 
 ### Firefox Configuration
 
@@ -137,7 +174,7 @@ sudo ss -tlnp | grep 8388
 
 - `nc` times out → security group isn't open on port 8388
 - `nc` connects but Firefox doesn't work → check Firefox proxy settings point to 127.0.0.1:1080
-- ss-local not running → restart with `ss-local -c ~/ss-local.json`
+- ss-local not running → restart with `ss-local -c ~/.config/ss-local.json`
 
 ## Notes
 
