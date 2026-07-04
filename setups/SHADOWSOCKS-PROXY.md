@@ -124,9 +124,26 @@ Add to your shell rc (e.g., `~/.zshrc.d/proxy.sh`):
 sox() {
     local plist="$HOME/Library/LaunchAgents/com.shadowsocks.local.plist"
     local label="com.shadowsocks.local"
+    local pac="$HOME/.config/proxy.pac"
+    local pac_on="$HOME/.config/proxy-on.pac"
+    local pac_off="$HOME/.config/proxy-off.pac"
 
     is_loaded() {
         launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1
+    }
+
+    proxy_on() {
+        launchctl load "$plist" &&
+            ln -sf "$pac_on" "$pac" &&
+            echo "[sox] Enabled." ||
+            echo "[sox] Failed to enable."
+    }
+
+    proxy_off() {
+        launchctl unload "$plist" &&
+            ln -sf "$pac_off" "$pac" &&
+            echo "[sox] Disabled." ||
+            echo "[sox] Failed to disable."
     }
 
     case "$1" in
@@ -134,29 +151,21 @@ sox() {
             if is_loaded; then
                 echo "[sox] Already enabled."
             else
-                launchctl load "$plist" &&
-                    echo "[sox] Enabled." ||
-                    echo "[sox] Failed to enable."
+                proxy_on
             fi
             ;;
         off)
             if is_loaded; then
-                launchctl unload "$plist" &&
-                    echo "[sox] Disabled." ||
-                    echo "[sox] Failed to disable."
+                proxy_off
             else
                 echo "[sox] Already disabled."
             fi
             ;;
-        "" )
+        "")
             if is_loaded; then
-                launchctl unload "$plist" &&
-                    echo "[sox] Disabled." ||
-                    echo "[sox] Failed to disable."
+                proxy_off
             else
-                launchctl load "$plist" &&
-                    echo "[sox] Enabled." ||
-                    echo "[sox] Failed to enable."
+                proxy_on
             fi
             ;;
         *)
@@ -175,25 +184,51 @@ sox on     # explicit enable
 sox off    # explicit disable
 ```
 
-### Firefox Configuration
+### Firefox Configuration (PAC file)
 
-Settings → Network Settings → Manual proxy configuration:
+Instead of manual proxy settings, use a PAC file so `sox` controls Firefox automatically.
 
-| Field       | Value       |
-|-------------|-------------|
-| HTTP Proxy  | *(empty)*   |
-| HTTPS Proxy | *(empty)*   |
-| FTP Proxy   | *(empty)*   |
-| SOCKS Host  | 127.0.0.1   |
-| Port        | 1080        |
+Create `~/.config/proxy-on.pac`:
 
-- Select **SOCKS v5**
-- Check ✓ **Proxy DNS when using SOCKS v5**
-- In **"No proxy for"**, add local services: `localhost, 127.0.0.1, *.local, 192.168.*`
+```js
+function FindProxyForURL(url, host) {
+    if (
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        isInNet(host, "192.168.0.0", "255.255.0.0") ||
+        isInNet(host, "10.0.0.0", "255.0.0.0") ||
+        shExpMatch(host, "*.local") ||
+        shExpMatch(host, "stream.trym.in")
+    ) {
+        return "DIRECT";
+    }
+    return "SOCKS5 127.0.0.1:1080";
+}
+```
 
-> **Gotcha:** With "Proxy DNS" enabled, Firefox resolves all DNS through the remote proxy. Local network services (e.g., a domain pointing to `192.168.x.x`) will fail because the EC2 server can't reach your LAN. Add those domains to the "No proxy for" exclusion list.
+Create `~/.config/proxy-off.pac`:
 
-> **Note:** Firefox also has its own DNS-over-HTTPS (DoH) setting (Privacy & Security → DNS over HTTPS). If a local domain fails even with the proxy exclusion, add it to the DoH exception list as well, or disable DoH entirely.
+```js
+function FindProxyForURL(url, host) {
+    return "DIRECT";
+}
+```
+
+Create a symlink:
+
+```sh
+ln -s ~/.config/proxy-off.pac ~/.config/proxy.pac
+```
+
+In Firefox: Settings → Network Settings → **Automatic proxy configuration URL**:
+
+```
+file:///Users/<username>/.config/proxy.pac
+```
+
+`sox` swaps the symlink between `proxy-on.pac` and `proxy-off.pac`. Firefox reads the PAC file on each request, so it picks up changes automatically. DoH can stay enabled.
+
+> **Gotcha:** Local network services (e.g., `stream.trym.in` pointing to `192.168.x.x`) must be excluded in the PAC file — the remote proxy can't reach your LAN.
 
 ## Client Setup — Android
 
