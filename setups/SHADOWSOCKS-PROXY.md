@@ -150,13 +150,9 @@ sox() {
             ;;
         "")
             if is_loaded; then
-                launchctl unload "$plist" &&
-                    echo "[sox] Disabled." ||
-                    echo "[sox] Failed to disable."
+                echo "[sox] Active."
             else
-                launchctl load "$plist" &&
-                    echo "[sox] Enabled." ||
-                    echo "[sox] Failed to enable."
+                echo "[sox] Inactive."
             fi
             ;;
         *)
@@ -170,9 +166,9 @@ sox() {
 Usage:
 
 ```sh
-sox        # toggle on/off
-sox on     # explicit enable
-sox off    # explicit disable
+sox        # show status
+sox on     # enable
+sox off    # disable
 ```
 
 ### Firefox Configuration (PAC file + DoH)
