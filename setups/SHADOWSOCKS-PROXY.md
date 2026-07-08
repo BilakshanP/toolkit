@@ -97,24 +97,27 @@ Create `~/Library/LaunchAgents/com.shadowsocks.local.plist`:
         <string>/Users/bipurohi2601/.config/ss-local.json</string>
     </array>
     <key>RunAtLoad</key>
-    <true/>
+    <false/>
     <key>KeepAlive</key>
-    <true/>
+    <false/>
 </dict>
 </plist>
 ```
 
+- `RunAtLoad` — start the service on login. `false` = only starts via `sox on`.
+- `KeepAlive` — auto-restart if process exits/crashes. `false` = stays dead until manual start.
+
+> **Note:** With the PAC file's `; DIRECT` fallback, setting both to `true` is also safe — if the EC2 server is unreachable, Firefox falls back to direct. Set both to `true` if you want always-on proxy with crash recovery.
+
 Load/unload:
 
 ```sh
-# Start (and enable on login)
+# Start
 launchctl load ~/Library/LaunchAgents/com.shadowsocks.local.plist
 
 # Stop
 launchctl unload ~/Library/LaunchAgents/com.shadowsocks.local.plist
 ```
-
-Auto-starts on login, restarts if it crashes.
 
 ### Shell toggle (`sox`)
 
