@@ -99,15 +99,15 @@ Create `~/Library/LaunchAgents/com.shadowsocks.local.plist`:
     <key>RunAtLoad</key>
     <false/>
     <key>KeepAlive</key>
-    <false/>
+    <true/>
 </dict>
 </plist>
 ```
 
 - `RunAtLoad` — start the service on login. `false` = only starts via `sox on`.
-- `KeepAlive` — auto-restart if process exits/crashes. `false` = stays dead until manual start.
+- `KeepAlive` — keep the process running while the job is loaded. `true` = macOS keeps ss-local alive and restarts it if it crashes. `sox off` (unload) still stops it cleanly.
 
-> **Note:** With the PAC file's `; DIRECT` fallback, setting both to `true` is also safe — if the EC2 server is unreachable, Firefox falls back to direct. Set both to `true` if you want always-on proxy with crash recovery.
+> **Note:** `KeepAlive` must be `true` — without it, launchctl runs ss-local but doesn't keep it alive as a daemon, causing it to exit immediately. With the PAC file's `; DIRECT` fallback, setting `RunAtLoad` to `true` is also safe if you want always-on proxy.
 
 Load/unload:
 
