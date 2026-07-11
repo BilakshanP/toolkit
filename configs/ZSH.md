@@ -109,6 +109,39 @@ hash -d ws=~/Workspace
 # then: cd ~ws
 ```
 
+### ls
+
+```zsh
+alias l='ls -GFA'
+```
+
+- `-G` — colorized output (directories blue, executables red, symlinks magenta)
+- `-F` — append type indicator suffix to entries
+- `-A` — show hidden files (except `.` and `..`)
+
+#### `-F` suffix indicators
+
+| Suffix | Type |
+|--------|------|
+| `/` | Directory |
+| `*` | Executable |
+| `=` | Unix socket |
+| `\|` | Named pipe (FIFO) |
+| `@` | Symlink |
+| (none) | Regular file |
+
+#### `ls -l` first-character type codes
+
+| Char | Type |
+|------|------|
+| `-` | Regular file |
+| `d` | Directory |
+| `l` | Symlink |
+| `s` | Socket |
+| `p` | Pipe (FIFO) |
+| `b` | Block device |
+| `c` | Character device |
+
 ### Misc
 
 ```sh
