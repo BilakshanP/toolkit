@@ -3,9 +3,31 @@
 1. Key Gen
 
 ```sh
+# Generate a secure ED25519 key (Recommended)
 ssh-keygen -t ed25519 -C "your_email@example.com"
-ssh-copy-id user@server # aoutomatic or manually append it to ~/.ssh/authorized_keys
+
+# Copy the key to a remote server automatically
+ssh-copy-id user@server
+
+# GitHub / GitLab Setup
+
+## MacOS
+pbcopy < ~/.ssh/id_ed25519.pub
+
+## Windows
+clip < ~/.ssh/id_ed25519.pub
+
+## Linux
+cat ~/.ssh/id_ed25519.pub # Highlight and copy the output manually, or use `xclip` if installed
+
+Test your connection
+
+# Test your connection
+ssh -T git@gitlab.com # or github.com
 ```
+
+**Manual Alternative**: If `ssh-copy-id` isn't available, manually append the contents of your local `~/.ssh/id_ed25519.pub` into the remote server's `~/.ssh/authorized_keys` file.
+Approved keys in `authorized_keys` follow this format: `ssh-rsa pub-key` identifier or `ssh-ed25519 pub-key` identifier.
 
 2. `~/.ssh/config`
 
