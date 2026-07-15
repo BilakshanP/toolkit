@@ -71,9 +71,21 @@ setopt AUTO_CD             # type a directory name to cd into it
 ### Completion
 
 ```zsh
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'   # case-insensitive
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|/=*'
 autoload -Uz compinit && compinit
 ```
+
+- Case-insensitive matching (`m:{a-z}={A-Z}`)
+- Recursive path expansion (`r:|/=*`) — `/u/lo/b` → Tab → `/usr/local/bin`
+
+### Spelling correction
+
+```zsh
+setopt CORRECT         # correct mistyped commands
+setopt CORRECT_ALL     # correct all arguments too
+```
+
+Prompts with `zsh: correct 'X' to 'Y' [nyae]?` on typos. Drop `CORRECT_ALL` if argument correction is too aggressive.
 
 ### Plugins (via Homebrew)
 
