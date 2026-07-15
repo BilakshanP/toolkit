@@ -20,8 +20,6 @@ clip < ~/.ssh/id_ed25519.pub
 ## Linux
 cat ~/.ssh/id_ed25519.pub # Highlight and copy the output manually, or use `xclip` if installed
 
-Test your connection
-
 # Test your connection
 ssh -T git@gitlab.com # or github.com
 ```
