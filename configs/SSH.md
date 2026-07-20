@@ -36,6 +36,8 @@ Host nickname
     IdentityFile ~/.ssh/id_ed25519
 ```
 
+To reset a SSH fingerprint use: `ssh-keygen -R host`
+
 **Note:** Approved keys are saved in `~/.ssh/authorized_keys`, with following format: `ssh-rsa pub-key identifier`.
 
 3. Port forwarding
@@ -147,7 +149,7 @@ ssh -J bastion user@10.0.0.5
 ssh -o ProxyCommand="ssh bastion -W %h:%p" user@10.0.0.5
 ```
 
-7. AWS SSM Session Manager (no open inbound ports needed)
+### AWS SSM Session Manager (no open inbound ports needed)
 
 ```sh
 # Start a shell session
