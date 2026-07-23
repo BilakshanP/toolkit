@@ -57,7 +57,7 @@ Use iTerm2's built-in title settings: Settings → Profiles → General → Titl
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
-setopt SHARE_HISTORY       # share history across all open terminals in real-time
+#setopt SHARE_HISTORY      # share history across all open terminals in real-time
 setopt HIST_IGNORE_DUPS    # skip consecutive duplicate entries
 setopt HIST_IGNORE_SPACE   # commands starting with space are not saved
 ```
@@ -118,18 +118,36 @@ Drop individual files into `~/.zshrc.d/` (e.g., `aliases.zsh`, `functions.zsh`) 
 
 ```zsh
 hash -d ws=~/Workspace
-# then: cd ~ws
+hash -d bp=~ws/bilakshanp-github   # chain off previous bookmark
+# then: cd ~ws, cd ~bp
 ```
 
-### ls
+Bookmarks can chain — `~bp` expands through `~ws` to the full path.
+
+### Aliases
 
 ```zsh
+alias ..='cd ..'
+alias c='clear'
+alias q='exit'
+alias e='exit'
 alias l='ls -GFA'
+alias ll='l -l'
+alias nv='nvim'
+alias cnc='c && c'
 ```
 
-- `-G` — colorized output (directories blue, executables red, symlinks magenta)
-- `-F` — append type indicator suffix to entries
-- `-A` — show hidden files (except `.` and `..`)
+- `l`: `-G` colorized, `-F` type suffix, `-A` show hidden (except `.`/`..`)
+- `ll`: long format
+- `cnc`: clear + clear (clean slate)
+
+### Editor
+
+```zsh
+export EDITOR='nvim'
+```
+
+### ls reference
 
 #### `-F` suffix indicators
 
