@@ -66,6 +66,7 @@ setopt HIST_IGNORE_SPACE   # commands starting with space are not saved
 
 ```zsh
 setopt AUTO_CD             # type a directory name to cd into it
+setopt NO_BEEP             # silence terminal bell (tab completion, errors, etc.)
 ```
 
 ### Completion
