@@ -3,6 +3,8 @@
 ### REPOs
 
 - [casey/dotfiles](https://github.com/casey/dotfiles) — dotbot-managed dotfiles + justfile setup (by the creator of `just`)
+- [awesome-dotfiles](https://awesome-dotfiles.vercel.app/gallery) — curated gallery of dotfile setups and configs
+- [end4-pC](https://github.com/pctrade/end4-pC) — Hyprland rice with extensive customization
 
 ### Tools
 
