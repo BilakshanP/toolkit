@@ -2,6 +2,8 @@
 
 ### REPOs
 
+- [casey/dotfiles](https://github.com/casey/dotfiles) — dotbot-managed dotfiles + justfile setup (by the creator of `just`)
+
 ### Tools
 
 - [Graphify](https://github.com/safishamsi/graphify)
