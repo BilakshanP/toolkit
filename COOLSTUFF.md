@@ -12,6 +12,7 @@
 - [CopyParty](https://github.com/9001/copyparty)
 - [pkgit](https://git.symlinx.net/pkgit/about/)
 - [just](https://github.com/casey/just)
+- [RaTeX](https://github.com/erweixin/RaTeX)
 
 ### Libraries
 
