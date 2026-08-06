@@ -14,6 +14,10 @@
 - [just](https://github.com/casey/just)
 - [RaTeX](https://github.com/erweixin/RaTeX)
 
+### Misc
+
+- [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts)
+
 ### Libraries
 
 #### Rust
@@ -53,6 +57,3 @@
 - `wasm-bindgen`, `wasm-pack`: Rust <-> JS interop for WebAssembly
 - `wasmtime`: standalone WebAssembly runtime
 
-### Repositories
-
-#### Tools
