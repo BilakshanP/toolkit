@@ -136,6 +136,7 @@ alias l='ls -GFA'
 alias ll='l -l'
 alias nv='nvim'
 alias cnc='c && c'
+alias tmp='mktemp "/tmp/tmp_$(date +%Y-%m-%d-%H-%M-%S)-XXXXXX"'
 ```
 
 - `l`: `-G` colorized, `-F` type suffix, `-A` show hidden (except `.`/`..`)
