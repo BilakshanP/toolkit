@@ -13,6 +13,7 @@
 - [pkgit](https://git.symlinx.net/pkgit/about/)
 - [just](https://github.com/casey/just)
 - [RaTeX](https://github.com/erweixin/RaTeX)
+- [OpenMouse](https://github.com/OpenMouse-Project/openmouse) ([openmouse.app](https://openmouse.app)) — browser-based open-source mouse configurator over WebHID; no vendor software, accounts, or telemetry
 
 ### Misc
 
